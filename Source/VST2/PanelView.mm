@@ -353,6 +353,36 @@ const char* const kScaleFreqLo[8] = { "0.6", "", "2.5", "", "", "20", "", "80" }
     drawText (title, boldFont (size), rgb (70, 71, 74), NSMidX (box), box.origin.y + kHeaderH * 0.5 + 0.5, 0.5);
 }
 
+// Switch legends: lit ones glow blue-white, unlit ones are a dim grey
+- (void) setLegendGlow: (bool) lit
+{
+    if (! lit) return;
+    NSShadow* g = [[[NSShadow alloc] init] autorelease];
+    [g setShadowOffset: NSMakeSize (0.0, 0.0)];
+    [g setShadowBlurRadius: 7.0];
+    [g setShadowColor: [NSColor colorWithCalibratedRed: 0.35 green: 0.75 blue: 1.0 alpha: 1.0]];
+    [g set];
+}
+
+- (void) strokeLegend: (NSBezierPath*) path lit: (bool) lit
+{
+    [NSGraphicsContext saveGraphicsState];
+    [self setLegendGlow: lit];
+    [(lit ? rgb (200, 236, 255) : rgb (86, 88, 92)) set];
+    [path stroke];
+    if (lit) [path stroke];          // twice: a stronger glow
+    [NSGraphicsContext restoreGraphicsState];
+}
+
+- (void) drawLegendText: (const char*) s at: (NSPoint) p lit: (bool) lit
+{
+    [NSGraphicsContext saveGraphicsState];
+    [self setLegendGlow: lit];
+    drawText (s, lit ? boldFont (12.5) : plainFont (12.0), lit ? rgb (200, 236, 255) : rgb (86, 88, 92), p.x, p.y);
+    if (lit) drawText (s, boldFont (12.5), rgb (200, 236, 255), p.x, p.y);
+    [NSGraphicsContext restoreGraphicsState];
+}
+
 - (void) drawBackground
 {
     const NSRect b = [self bounds];
@@ -392,9 +422,10 @@ const char* const kScaleFreqLo[8] = { "0.6", "", "2.5", "", "", "20", "", "80" }
     drawText ("LFO", ledFont, white, kLedLfo.x, kLedLfo.y - 25.0, 0.3);
     drawText ("BYPASS", ledFont, white, kLedBypass.x, kLedBypass.y - 25.0, 0.3);
 
-    // Switch legends: square and sine wave; LO and HI
-    [white set];
+    // Switch legends: square and sine wave; LO and HI. The selected side's
+    // legend lights up, the other is dimmed, so the switch reads at a glance.
     {
+        const bool sine = isOn (shown[kLfoWave]), hi = isOn (shown[kRange]);
         NSBezierPath* sq = [NSBezierPath bezierPath];
         const CGFloat y0 = 263.0, y1 = 252.0, x = 88.0, w = 8.0;
         [sq moveToPoint: NSMakePoint (x, y0)];
@@ -406,19 +437,19 @@ const char* const kScaleFreqLo[8] = { "0.6", "", "2.5", "", "", "20", "", "80" }
             [sq lineToPoint: NSMakePoint (x + k * 2 * w + w + 2.5, y0)];
         }
         [sq lineToPoint: NSMakePoint (x + 6 * w + 2.0, y0)];
-        [sq setLineWidth: 1.4];
-        [sq stroke];
+        [sq setLineWidth: 1.6];
         NSBezierPath* sn = [NSBezierPath bezierPath];
         for (int k = 0; k <= 60; ++k)
         {
             const NSPoint p = NSMakePoint (147.0 + k * 0.62, 257.5 - 6.0 * std::sin (k / 60.0 * 3.0 * M_PI));
             if (k == 0) [sn moveToPoint: p]; else [sn lineToPoint: p];
         }
-        [sn setLineWidth: 1.6];
-        [sn stroke];
+        [sn setLineWidth: 1.8];
+        [self strokeLegend: sq lit: ! sine];
+        [self strokeLegend: sn lit: sine];
+        [self drawLegendText: "LO" at: NSMakePoint (307.0, 258.0) lit: ! hi];
+        [self drawLegendText: "HI" at: NSMakePoint (375.0, 258.0) lit: hi];
     }
-    drawText ("LO", plainFont (12.0), white, 307.0, 258.0);
-    drawText ("HI", plainFont (12.0), white, 375.0, 258.0);
 
     // Knob scales
     drawScale (kCtls[0].cx, kCtls[0].cy, kCtls[0].r, 11, kScale010, 0);
@@ -552,8 +583,8 @@ const char* const kScaleFreqLo[8] = { "0.6", "", "2.5", "", "", "20", "", "80" }
     [line stroke];
 }
 
-// Blue slide switch in its black slot: the raised half of the lever shows
-// which side is selected (right = on: sine / HI).
+// Blue slide switch in its black slot: the selected half of the lever is
+// raised and lit, the other dark (right = on: sine / HI).
 - (void) drawSlide: (const Ctl&) c
 {
     const bool right = isOn (shown[c.param]);
@@ -571,23 +602,30 @@ const char* const kScaleFreqLo[8] = { "0.6", "", "2.5", "", "", "20", "", "80" }
                               : NSMakeRect (lever.origin.x + half, lever.origin.y, half, lever.size.height);
     const NSRect raised = right ? NSMakeRect (lever.origin.x + half - 2.0, lever.origin.y - 2.0, half + 2.0, lever.size.height + 3.0)
                                 : NSMakeRect (lever.origin.x, lever.origin.y - 2.0, half + 2.0, lever.size.height + 3.0);
-    NSGradient* fg = [[[NSGradient alloc] initWithStartingColor: rgb (92, 150, 214) endingColor: rgb (62, 118, 188)] autorelease];
+    // The unselected half: dark, unlit blue
+    NSGradient* fg = [[[NSGradient alloc] initWithStartingColor: rgb (36, 58, 92) endingColor: rgb (24, 40, 68)] autorelease];
     [fg drawInRect: flat angle: 90.0];
-    [NSGraphicsContext saveGraphicsState];
-    NSShadow* sh = [[[NSShadow alloc] init] autorelease];
-    [sh setShadowOffset: NSMakeSize (right ? -2.0 : 2.0, -2.0)];
-    [sh setShadowBlurRadius: 3.0];
-    [sh setShadowColor: [NSColor colorWithCalibratedWhite: 0.0 alpha: 0.6]];
-    [sh set];
+
+    // The selected half: raised and lit from inside, with a glow round it
     NSBezierPath* rp = [NSBezierPath bezierPathWithRoundedRect: raised xRadius: 2 yRadius: 2];
-    [rgb (30, 86, 168) set];
+    [NSGraphicsContext saveGraphicsState];
+    NSShadow* glow = [[[NSShadow alloc] init] autorelease];
+    [glow setShadowOffset: NSMakeSize (0.0, 0.0)];
+    [glow setShadowBlurRadius: 12.0];
+    [glow setShadowColor: [NSColor colorWithCalibratedRed: 0.30 green: 0.70 blue: 1.0 alpha: 1.0]];
+    [glow set];
+    [rgb (60, 150, 245) set];
+    [rp fill];
     [rp fill];
     [NSGraphicsContext restoreGraphicsState];
     NSGradient* rg = [[[NSGradient alloc] initWithColorsAndLocations:
-                         rgb (70, 132, 210), 0.0, rgb (34, 92, 176), 0.5, rgb (22, 70, 146), 1.0, nil] autorelease];
+                         rgb (210, 240, 255), 0.0, rgb (110, 190, 255), 0.35, rgb (46, 136, 236), 0.8, rgb (30, 104, 206), 1.0, nil] autorelease];
     [rg drawInBezierPath: rp angle: 90.0];
+    [rgb (16, 60, 130) set];
+    [rp setLineWidth: 0.8];
+    [rp stroke];
     // The ridge where the lever steps up
-    [[NSColor colorWithCalibratedWhite: 1.0 alpha: 0.35] set];
+    [[NSColor colorWithCalibratedWhite: 1.0 alpha: 0.6] set];
     const CGFloat ex = right ? NSMinX (raised) + 1.0 : NSMaxX (raised) - 1.0;
     NSRectFillUsingOperation (NSMakeRect (ex - 0.5, NSMinY (raised) + 2, 1.0, raised.size.height - 4), NSCompositeSourceOver);
 }
