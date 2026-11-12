@@ -122,24 +122,24 @@ int main (int argc, char** argv)
     e->setParameter (e, kMix, 0.5f);
     const float g0 = e->getParameter (e, kMix);
     automateCalls = beginCalls = endCalls = 0;
-    mouse (win, panel, NSLeftMouseDown,    NSMakePoint (340, 159));
-    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (340, 184));
-    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (340, 209));
-    mouse (win, panel, NSLeftMouseUp,      NSMakePoint (340, 209));
+    mouse (win, panel, NSLeftMouseDown,    NSMakePoint (340, 168));
+    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (340, 193));
+    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (340, 218));
+    mouse (win, panel, NSLeftMouseUp,      NSMakePoint (340, 218));
     const float g1 = e->getParameter (e, kMix);
     std::printf ("  Mix %.2f -> %.2f\n", g0, g1);
     check (std::fabs (g1 - (g0 - 0.25f)) < 0.02f, "dragging a knob down turns it down");
     check (automateCalls > 0 && beginCalls == 1 && endCalls == 1, "host gets begin / automate / end");
 
-    mouse (win, panel, NSLeftMouseDown, NSMakePoint (340, 159), 2);
-    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (340, 159), 2);
+    mouse (win, panel, NSLeftMouseDown, NSMakePoint (340, 168), 2);
+    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (340, 168), 2);
     check (std::fabs (e->getParameter (e, kMix) - kDefaults[kMix]) < 1e-6f, "double-click resets a knob");
 
     // Each knob answers where it is drawn (dragged up from mid-travel)
     {
         const int knobs[7] = { kAmount, kRate, kDrive, kMix, kFreq, kInput, kOutput };
-        const CGFloat kx[7] = { 134, 131, 237, 340, 352, 40, 108 };
-        const CGFloat ky[7] = { 159, 405, 154, 159, 405, 826, 826 };
+        const CGFloat kx[7] = { 134, 131, 237, 340, 350, 40, 108 };
+        const CGFloat ky[7] = { 168, 398, 158, 168, 398, 826, 826 };
         bool all = true;
         for (int k = 0; k < 7; ++k)
         {
@@ -182,9 +182,9 @@ int main (int argc, char** argv)
     check (e->getParameter (e, kEffect) >= 0.5f, "and back in");
 
     // Frequency turned shows in the readout
-    mouse (win, panel, NSLeftMouseDown,    NSMakePoint (352, 405));
-    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (352, 385));
-    mouse (win, panel, NSLeftMouseUp,      NSMakePoint (352, 385));
+    mouse (win, panel, NSLeftMouseDown,    NSMakePoint (350, 398));
+    mouse (win, panel, NSLeftMouseDragged, NSMakePoint (350, 378));
+    mouse (win, panel, NSLeftMouseUp,      NSMakePoint (350, 378));
     renderPNG (panel, dir + "/panel_readout.png");
     e->setParameter (e, kFreq, kDefaults[kFreq]);
 
@@ -238,6 +238,8 @@ int main (int argc, char** argv)
         for (int i = 0; i < n; ++i) a[i] = b[i] = (float) (0.15 * std::sin (2.0 * 3.14159265358979 * 220.0 * i / 44100.0));
         float* in[2] = { &a[0], &b[0] };
         float* out[2] = { &oa[0], &ob[0] };
+        mouse (win, panel, NSLeftMouseDown, NSMakePoint (350, 398));     // readout shows FREQUENCY
+        mouse (win, panel, NSLeftMouseUp,   NSMakePoint (350, 398));
         NSData* quiet = renderPNG (panel, dir + "/panel_leds_off.png");
         e->processReplacing (e, in, out, n);
         pump (0.3);

@@ -51,13 +51,13 @@ const CGFloat kHeaderH = 27.0;
 const CGFloat kSlideHalfH = 17.0;
 
 const Ctl kCtls[] = {
-    { kAmount,  kCtlKnob,       134, 159, 43, true,  "AMOUNT",    0, 0 },
+    { kAmount,  kCtlKnob,       134, 168, 40, true,  "AMOUNT",    0, 0 },
     { kLfoWave, kCtlSlide,      134, 280, 44, false, "LFO WAVE",  0, 0 },
-    { kRate,    kCtlKnob,       131, 405, 43, false, "RATE",      0, 0 },
-    { kDrive,   kCtlKnob,       237, 154, 30, true,  "DRIVE",     0, 0 },
-    { kMix,     kCtlKnob,       340, 159, 43, false, "MIX",       0, 0 },
+    { kRate,    kCtlKnob,       131, 398, 40, false, "RATE",      0, 0 },
+    { kDrive,   kCtlKnob,       237, 158, 29, true,  "DRIVE",     0, 0 },
+    { kMix,     kCtlKnob,       340, 168, 40, false, "MIX",       0, 0 },
     { kRange,   kCtlSlide,      341, 280, 44, false, "LO / HI",   0, 0 },
-    { kFreq,    kCtlKnob,       352, 405, 43, false, "FREQUENCY", 0, 0 },
+    { kFreq,    kCtlKnob,       350, 398, 40, false, "FREQUENCY", 0, 0 },
     { kEffect,  kCtlFootswitch, 237, 695, 24, false, "EFFECT",    0, 0 },
     // Plugin strip
     { kInput,   kCtlSmallKnob,   40, 826, 17, false, "INPUT",  "-12", "+12" },
@@ -140,14 +140,14 @@ void drawScale (CGFloat cx, CGFloat cy, CGFloat r, int n, const char* const* lab
         const CGFloat a = valueAngle ((CGFloat) k / (n - 1));
         NSBezierPath* t = [NSBezierPath bezierPath];
         [t moveToPoint: polar (cx, cy, r + 3.0, a)];
-        [t lineToPoint: polar (cx, cy, r + 11.0, a)];
+        [t lineToPoint: polar (cx, cy, r + 10.0, a)];
         [t setLineWidth: 1.3];
         [t stroke];
         const char* l1 = labels ? labels[k] : 0;
         const char* l2 = labels2 ? labels2[k] : 0;
         if (l1 && l1[0])
         {
-            const NSPoint p = polar (cx, cy, r + 21.0, a);
+            const NSPoint p = polar (cx, cy, r + ((l2 && l2[0]) ? 22.0 : 19.0), a);
             if (l2 && l2[0])
             {
                 drawText (l1, plainFont (10.5), white, p.x, p.y - 5.5);
@@ -385,7 +385,7 @@ const char* const kScaleFreqLo[8] = { "0.6", "", "2.5", "", "", "20", "", "80" }
     drawText ("DRIVE", nameFont, white, 237.0, kTopLabelY, 0.4);
     drawText ("MIX", nameFont, white, 340.0, kTopLabelY, 0.4);
     drawText ("RATE", nameFont, white, 132.0, kLowLabelY, 0.4);
-    drawText ("FREQUENCY", nameFont, white, 341.0, kLowLabelY, 0.4);
+    drawText ("FREQUENCY", nameFont, white, 342.0, kLowLabelY, 0.4);
     NSFont* ledFont = plainFont (10.5);
     drawText ("LEVEL", ledFont, white, kLedLevel.x, kLedLevel.y - 28.0, 0.3);
     drawText ("LFO", ledFont, white, kLedLfo.x, kLedLfo.y - 25.0, 0.3);
@@ -408,9 +408,9 @@ const char* const kScaleFreqLo[8] = { "0.6", "", "2.5", "", "", "20", "", "80" }
         [sq setLineWidth: 1.4];
         [sq stroke];
         NSBezierPath* sn = [NSBezierPath bezierPath];
-        for (int k = 0; k <= 40; ++k)
+        for (int k = 0; k <= 60; ++k)
         {
-            const NSPoint p = NSMakePoint (150.0 + k * 0.7, 257.5 - 6.0 * std::sin (k / 40.0 * 4.0 * M_PI));
+            const NSPoint p = NSMakePoint (147.0 + k * 0.62, 257.5 - 6.0 * std::sin (k / 60.0 * 3.0 * M_PI));
             if (k == 0) [sn moveToPoint: p]; else [sn lineToPoint: p];
         }
         [sn setLineWidth: 1.6];
