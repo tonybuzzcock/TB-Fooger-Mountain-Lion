@@ -139,7 +139,7 @@ int main (int argc, char** argv)
     {
         const int knobs[7] = { kAmount, kRate, kDrive, kMix, kFreq, kInput, kOutput };
         const CGFloat kx[7] = { 134, 131, 237, 340, 350, 40, 108 };
-        const CGFloat ky[7] = { 168, 398, 158, 168, 398, 826, 826 };
+        const CGFloat ky[7] = { 168, 398, 158, 168, 398, 686, 686 };
         bool all = true;
         for (int k = 0; k < 7; ++k)
         {
@@ -172,13 +172,13 @@ int main (int argc, char** argv)
     }
 
     // Stomp switch: each press toggles
-    mouse (win, panel, NSLeftMouseDown, NSMakePoint (237, 695));
-    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (237, 695));
+    mouse (win, panel, NSLeftMouseDown, NSMakePoint (237, 555));
+    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (237, 555));
     check (e->getParameter (e, kEffect) < 0.5f, "footswitch bypasses the effect");
     pump (0.1);
     renderPNG (panel, dir + "/panel_bypassed.png");
-    mouse (win, panel, NSLeftMouseDown, NSMakePoint (237, 695));
-    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (237, 695));
+    mouse (win, panel, NSLeftMouseDown, NSMakePoint (237, 555));
+    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (237, 555));
     check (e->getParameter (e, kEffect) >= 0.5f, "and back in");
 
     // Frequency turned shows in the readout
@@ -189,12 +189,12 @@ int main (int argc, char** argv)
     e->setParameter (e, kFreq, kDefaults[kFreq]);
 
     std::printf ("\nPresets\n");
-    #define SLOT(k) NSMakePoint (206.0 + (k) * 33.0 + 14.5, 826.0)
+    #define SLOT(k) NSMakePoint (206.0 + (k) * 33.0 + 14.5, 686.0)
     e->setParameter (e, kDrive, 0.3f);
     e->setParameter (e, kEffect, 0.0f);
     pump (0.1);
-    mouse (win, panel, NSLeftMouseDown, NSMakePoint (175, 826));    // SAVE
-    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (175, 826));
+    mouse (win, panel, NSLeftMouseDown, NSMakePoint (175, 686));    // SAVE
+    mouse (win, panel, NSLeftMouseUp,   NSMakePoint (175, 686));
     mouse (win, panel, NSLeftMouseDown, SLOT (2));                   // slot 3
     mouse (win, panel, NSLeftMouseUp,   SLOT (2));
     FILE* pf = std::fopen (presetFile.c_str(), "r");

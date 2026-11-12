@@ -9,7 +9,7 @@
 namespace tbfooger
 {
 
-enum { kEditorWidth = 480, kEditorHeight = 920 };   // the unit's face (photo 1540 x 2489 -> 480 x 776), then the plugin strip
+enum { kEditorWidth = 480, kEditorHeight = 780 };   // the unit's face (from the photo, gap above the footswitch shortened), then the plugin strip
 
 // Lamps the panel shows, read from the running circuit
 enum Meter { kMeterLevel = 0, kMeterLfo, kNumMeters };

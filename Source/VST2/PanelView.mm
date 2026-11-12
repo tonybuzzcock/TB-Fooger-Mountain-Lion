@@ -41,9 +41,10 @@ struct Ctl
     const char* posB;      // small knob right end
 };
 
-// The face (photo 1540 x 2489 scaled to 480 wide), then the strip
-const CGFloat kFaceH = 776.0;
-const CGFloat kStripTop = 776.0;
+// The face (photo 1540 x 2489 scaled to 480 wide, with the gap above the
+// footswitch cut to a quarter at the user's request), then the strip
+const CGFloat kFaceH = 636.0;
+const CGFloat kStripTop = 636.0;
 const CGFloat kWoodL = 22.0, kWoodR = 457.0;
 const NSRect kLfoBox = { { 59.0, 61.0 }, { 140.0, 407.0 } };
 const NSRect kModBox = { { 273.0, 61.0 }, { 140.0, 407.0 } };
@@ -58,10 +59,10 @@ const Ctl kCtls[] = {
     { kMix,     kCtlKnob,       340, 168, 40, false, "MIX",       0, 0 },
     { kRange,   kCtlSlide,      341, 280, 44, false, "LO / HI",   0, 0 },
     { kFreq,    kCtlKnob,       350, 398, 40, false, "FREQUENCY", 0, 0 },
-    { kEffect,  kCtlFootswitch, 237, 695, 24, false, "EFFECT",    0, 0 },
+    { kEffect,  kCtlFootswitch, 237, 555, 24, false, "EFFECT",    0, 0 },
     // Plugin strip
-    { kInput,   kCtlSmallKnob,   40, 826, 17, false, "INPUT",  "-12", "+12" },
-    { kOutput,  kCtlSmallKnob,  108, 826, 17, false, "OUTPUT", "-24", "+24" },
+    { kInput,   kCtlSmallKnob,   40, 686, 17, false, "INPUT",  "-12", "+12" },
+    { kOutput,  kCtlSmallKnob,  108, 686, 17, false, "OUTPUT", "-24", "+24" },
 };
 const int kNumCtls = (int) (sizeof (kCtls) / sizeof (kCtls[0]));
 
@@ -74,13 +75,13 @@ const NSPoint kLedLevel = { 237.0, 283.0 };
 const NSPoint kLedLfo = { 237.0, 358.0 };
 const NSPoint kLedBypass = { 237.0, 433.0 };
 
-const NSRect kLogoBox = { { 56.0, 659.0 }, { 124.0, 72.0 } };   // left of the footswitch
+const NSRect kLogoBox = { { 56.0, 519.0 }, { 124.0, 72.0 } };   // left of the footswitch
 
 // Preset section in the strip: a SAVE button and slots 1..8, then the readout
-const CGFloat kPresetLabelY = 798.0;
-const NSRect kSaveRect = { { 152.0, 813.0 }, { 46.0, 26.0 } };
-const CGFloat kSlotX0 = 206.0, kSlotPitch = 33.0, kSlotW = 29.0, kSlotY = 813.0, kSlotH = 26.0;
-const NSRect kReadoutRect = { { 14.0, 862.0 }, { 452.0, 46.0 } };
+const CGFloat kPresetLabelY = 658.0;
+const NSRect kSaveRect = { { 152.0, 673.0 }, { 46.0, 26.0 } };
+const CGFloat kSlotX0 = 206.0, kSlotPitch = 33.0, kSlotW = 29.0, kSlotY = 673.0, kSlotH = 26.0;
+const NSRect kReadoutRect = { { 14.0, 722.0 }, { 452.0, 46.0 } };
 
 inline NSRect slotRect (int k) { return NSMakeRect (kSlotX0 + k * kSlotPitch, kSlotY, kSlotW, kSlotH); }
 
@@ -368,7 +369,7 @@ const char* const kScaleFreqLo[8] = { "0.6", "", "2.5", "", "", "20", "", "80" }
     NSRectFill (NSMakeRect (0, kStripTop + 2.0, b.size.width, 1.0));
 
     // Screws
-    const NSPoint screws[6] = { { 39, 56 }, { 438, 56 }, { 35, 354 }, { 445, 354 }, { 34, 728 }, { 445, 726 } };
+    const NSPoint screws[6] = { { 39, 56 }, { 438, 56 }, { 35, 354 }, { 445, 354 }, { 34, 588 }, { 445, 586 } };
     for (int k = 0; k < 6; ++k) [self drawScrewAt: screws[k]];
 
     // The model name on one line, the unit's oblique lettering
