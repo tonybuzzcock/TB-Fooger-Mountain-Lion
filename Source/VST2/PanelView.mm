@@ -182,7 +182,7 @@ static CGFloat fitFontSize (const char* s, CGFloat size, CGFloat maxW)
     return f < 7.0 ? 7.0 : f;
 }
 
-@interface TBFoogerRingModPanelView : NSView : NSView <NSTextFieldDelegate>
+@interface TBFoogerRingModPanelView : NSView <NSTextFieldDelegate>
 {
     EditorHost* host;
     float shown[kNumParams];
